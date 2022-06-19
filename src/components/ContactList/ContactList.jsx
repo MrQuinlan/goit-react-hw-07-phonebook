@@ -1,49 +1,37 @@
 import { useSelector } from 'react-redux/es/exports';
-import { useDispatch } from 'react-redux';
-import { removeContact } from 'redux/ContactForm/ContactForm-actions';
+import { useGetContactsQuery } from 'services/contacts-api';
 import s from './ContactList.module.css';
+import ListItem from 'components/ListItem';
 
 const ContactList = () => {
-    const dispatch = useDispatch();
+    const { data } = useGetContactsQuery('');
 
     function filteredContacts(state) {
-        const filter = state.persistedReducer.filter;
-        const items = state.persistedReducer.items;
+        const filter = state.filter;
 
         if (!filter) {
-            return items;
+            return data;
         }
 
-        return items.filter(({ name }) => {
+        return data.filter(({ name }) => {
             return name.toLowerCase().includes(filter);
         });
     }
 
     const items = useSelector(state => {
+        if (!data) {
+            return [];
+        }
+
         return filteredContacts(state);
     });
 
     return (
         <ul className={s.list}>
             {items.map(contact => {
-                const { id, name, number } = contact;
+                const { id } = contact;
 
-                return (
-                    <li className={s.item} key={id}>
-                        <span className={s.span}>
-                            {name}: {number}
-                        </span>
-
-                        <button
-                            id={id}
-                            type="button"
-                            className={s.btn}
-                            onClick={() => dispatch(removeContact(id))}
-                        >
-                            Delete
-                        </button>
-                    </li>
-                );
+                return <ListItem key={id} {...contact} />;
             })}
         </ul>
     );

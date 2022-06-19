@@ -1,3 +1,4 @@
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Container from './Container';
 import ContactForm from './ContactForm';
 import Filter from './Filter';

@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/ContactForm/ContactForm-actions';
+import {
+    useGetContactsQuery,
+    useAddContactMutation,
+} from 'services/contacts-api';
 import s from './ContactForm.module.css';
 
 const ContactForm = () => {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
 
-    const dispatch = useDispatch();
+    const { data } = useGetContactsQuery('');
 
-    const contacts = useSelector(state => state.persistedReducer.items);
+    const [addContact] = useAddContactMutation();
 
     const handleChange = e => {
         const { name, value } = e.target;
@@ -26,14 +28,14 @@ const ContactForm = () => {
     const handleSubmit = e => {
         e.preventDefault();
 
-        const isContact = contacts.find(contact => contact.name === name);
+        const isContact = data.find(contact => contact.name === name);
 
         if (isContact) {
             alert(`${name} is already in contacts`);
             return;
         }
 
-        dispatch(addContact(name, number));
+        addContact({ name, number });
 
         reset();
     };
